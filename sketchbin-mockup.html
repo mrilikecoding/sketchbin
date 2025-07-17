@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sketchbin</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #7928CA 0%, #4A2FA0 50%, #FF0080 100%);
+            color: #f0f0f0;
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        .site-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            padding: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .logo {
+            font-family: 'Space Mono', monospace;
+            font-size: 28px;
+            font-weight: bold;
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo span {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 25px;
+        }
+        
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-family: 'Space Mono', monospace;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+        
+        nav a:hover {
+            opacity: 1;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .sketches {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .sketch-card {
+            background: rgba(15, 15, 20, 0.7);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .sketch-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-header {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .card-type {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: 'Space Mono', monospace;
+        }
+        
+        .card-type.code {
+            background: rgba(77, 171, 245, 0.2);
+            color: #4DABF5;
+        }
+        
+        .card-type.writing {
+            background: rgba(137, 218, 89, 0.2);
+            color: #89DA59;
+        }
+        
+        .card-type.audio {
+            background: rgba(255, 126, 197, 0.2);
+            color: #FF7EC5;
+        }
+        
+        .card-type.image {
+            background: rgba(255, 193, 7, 0.2);
+            color: #FFC107;
+        }
+        
+        .card-date {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        .card-content {
+            padding: 15px;
+        }
+        
+        .card-title {
+            margin-bottom: 10px;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .card-excerpt {
+            opacity: 0.8;
+            font-size: 14px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+        }
+        
+        .card-footer {
+            padding: 10px 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+        
+        .card-footer a {
+            color: #fff;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+        
+        .card-footer a:hover {
+            opacity: 1;
+        }
+        
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .card-tag {
+            font-size: 12px;
+            opacity: 0.6;
+        }
+        
+        .sidebar {
+            position: sticky;
+            top: 40px;
+        }
+        
+        .sidebar-section {
+            background: rgba(15, 15, 20, 0.7);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .sidebar-title {
+            font-family: 'Space Mono', monospace;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .tag-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .tag-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .about-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #4A2FA0;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .sidebar-links {
+            list-style: none;
+        }
+        
+        .sidebar-links li {
+            margin-bottom: 10px;
+        }
+        
+        .sidebar-links a {
+            display: flex;
+            align-items: center;
+            color: #fff;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+        
+        .sidebar-links a:hover {
+            opacity: 1;
+        }
+        
+        .link-icon {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .featured-sketch {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            grid-column: 1 / -1;
+            background: rgba(15, 15, 20, 0.7);
+            margin-bottom: 30px;
+        }
+        
+        .featured-content {
+            background: linear-gradient(to right, rgba(15, 15, 20, 0.9), rgba(15, 15, 20, 0.7));
+            padding: 30px;
+            height: 100%;
+        }
+        
+        .featured-label {
+            font-family: 'Space Mono', monospace;
+            background: rgba(255, 255, 255, 0.1);
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        
+        .featured-title {
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        
+        .featured-excerpt {
+            margin-bottom: 20px;
+            opacity: 0.9;
+            max-width: 600px;
+        }
+        
+        .featured-meta {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .featured-date {
+            margin-right: 15px;
+            opacity: 0.7;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: #FF0080;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button:hover {
+            background: #ff339a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 0, 128, 0.3);
+        }
+        
+        .search-bar {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            color: white;
+            font-family: 'Space Mono', monospace;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .nate-green-link {
+            display: flex;
+            align-items: center;
+            background: rgba(42, 157, 86, 0.2);
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #fff;
+        }
+        
+        .nate-green-link:hover {
+            background: rgba(42, 157, 86, 0.3);
+        }
+        
+        .terminal-icon {
+            margin-right: 10px;
+            opacity: 0.8;
+        }
+        
+        code {
+            font-family: 'Space Mono', monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        
+        footer {
+            margin-top: 50px;
+            padding: 30px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        .code-preview {
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            line-height: 1.4;
+            overflow-x: auto;
+            margin: 10px 0;
+            max-height: 150px;
+        }
+        
+        .audio-player {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .play-button {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #FF0080;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            cursor: pointer;
+        }
+        
+        .progress-bar {
+            flex: 1;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            position: relative;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 30%;
+            background: #FF0080;
+            border-radius: 3px;
+        }
+        
+        .audio-time {
+            margin-left: 15px;
+            font-size: 12px;
+            font-family: 'Space Mono', monospace;
+        }
+        
+        .filter-bar {
+            display: flex;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .filter-button {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            color: white;
+            font-family: 'Space Mono', monospace;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-button:hover, .filter-button.active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .filter-button.active {
+            background: #FF0080;
+        }
+        
+        .create-new {
+            margin-left: auto;
+            background: #FF0080;
+            font-weight: 500;
+        }
+        
+        .create-new:hover {
+            background: #ff339a;
+        }
+        
+        .image-preview {
+            width: 100%;
+            height: 150px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        
+        .mood-bar {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .mood {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .mood:hover {
+            transform: scale(1.2);
+        }
+        
+        .mood.happy {
+            background: #FFC107;
+        }
+        
+        .mood.calm {
+            background: #4DABF5;
+        }
+        
+        .mood.creative {
+            background: #FF0080;
+        }
+        
+        .mood.focused {
+            background: #89DA59;
+        }
+        
+        .version-history {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .version {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .version.active {
+            background: #FF0080;
+            transform: scale(1.2);
+        }
+        
+        .toast-message {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-family: 'Space Mono', monospace;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            animation: fadeInOut 3s ease forwards;
+            display: none;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, 20px); }
+            10% { opacity: 1; transform: translate(-50%, 0); }
+            90% { opacity: 1; transform: translate(-50%, 0); }
+            100% { opacity: 0; transform: translate(-50%, -20px); }
+        }
+        
+        .loading-bar {
+            height: 3px;
+            width: 100%;
+            background: linear-gradient(to right, #FF0080, #7928CA);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            transform-origin: left;
+            animation: loading 2s ease-in-out infinite;
+            display: none;
+        }
+        
+        @keyframes loading {
+            0% { transform: scaleX(0); }
+            50% { transform: scaleX(1); }
+            100% { transform: scaleX(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-bar"></div>
+    <div class="toast-message">Sketch saved successfully!</div>
+    
+    <div class="site-wrapper">
+        <header>
+            <a href="#" class="logo"><span>{}</span> sketchbin</a>
+            <nav>
+                <ul>
+                    <li><a href="#">Explore</a></li>
+                    <li><a href="#">Collections</a></li>
+                    <li><a href="#">Activity</a></li>
+                    <li><a href="#">Community</a></li>
+                </ul>
+            </nav>
+        </header>
+        
+        <div class="main-content">
+            <div class="content-area">
+                <div class="featured-sketch">
+                    <div class="featured-content">
+                        <div class="featured-label">FEATURED SKETCH</div>
+                        <h2 class="featured-title">Dynamic Gradient Generator with Three.js</h2>
+                        <p class="featured-excerpt">An experiment with procedural textures using WebGL shaders. This sketch generates flowing gradients that respond to mouse movements and can be exported as wallpapers or used as dynamic backgrounds.</p>
+                        <div class="code-preview">
+// Fragment shader for dynamic gradients
+uniform float time;
+uniform vec2 resolution;
+uniform vec2 mouse;
+varying vec2 vUv;
+
+void main() {
+  vec2 st = gl_FragCoord.xy/resolution.xy;
+  vec2 m = mouse.xy/resolution.xy;
+  
+  vec3 color1 = vec3(0.5 + 0.5*sin(time*0.1), 0.5, 0.5 + 0.5*cos(time*0.2));
+  vec3 color2 = vec3(0.1, 0.3, 0.5 + 0.5*sin(time*0.3));
+  
+  float mixValue = distance(st, m);
+  vec3 color = mix(color1, color2, mixValue);
+  
+  gl_FragColor = vec4(color, 1.0);
+}
+                        </div>
+                        <div class="featured-meta">
+                            <span class="featured-date">March 19, 2025</span>
+                            <a href="#" class="cta-button">View Full Sketch</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="filter-bar">
+                    <button class="filter-button active">All Sketches</button>
+                    <button class="filter-button">Code</button>
+                    <button class="filter-button">Writing</button>
+                    <button class="filter-button">Audio</button>
+                    <button class="filter-button">Visual</button>
+                    <button class="filter-button create-new">+ Create New</button>
+                </div>
+                
+                <div class="sketches">
+                    <!-- Code Sketch -->
+                    <div class="sketch-card">
+                        <div class="card-header">
+                            <div class="card-type code">CODE</div>
+                            <div class="card-date">2 days ago</div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Custom React Hook for Animated Counters</h3>
+                            <p class="card-excerpt">A reusable hook that creates smooth counting animations with configurable easing functions. Built this for a dashboard project.</p>
+                            <div class="code-preview">
+import { useState, useEffect } from 'react';
+
+export const useAnimatedCounter = (
+  target, 
+  duration = 1000, 
+  easing = t => t
+) => {
+  const [count, setCount] = useState(0);
+  
+  useEffect(() => {
+    let startTime = null;
+    const animate = timestamp => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min(
+        (timestamp - startTime) / duration, 1);
+      const easedProgress = easing(progress);
+      setCount(Math.floor(easedProgress * target));
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+    
+    requestAnimationFrame(animate);
+  }, [target, duration, easing]);
+  
+  return count;
+};
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="card-tags">
+                                <span class="card-tag">#react</span>
+                                <span class="card-tag">#hooks</span>
+                                <span class="card-tag">#animation</span>
+                            </div>
+                            <a href="#">View →</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Writing Sketch -->
+                    <div class="sketch-card">
+                        <div class="card-header">
+                            <div class="card-type writing">WRITING</div>
+                            <div class="card-date">1 week ago</div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Thoughts on Minimalist Design</h3>
+                            <p class="card-excerpt">Exploring the principles behind "less is more" and how constraint often leads to more creative solutions. Notes from my recent design experimentation.</p>
+                        </div>
+                        <div class="card-footer">
+                            <div class="card-tags">
+                                <span class="card-tag">#design</span>
+                                <span class="card-tag">#minimalism</span>
+                                <span class="card-tag">#thoughts</span>
+                            </div>
+                            <a href="#">View →</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Audio Sketch -->
+                    <div class="sketch-card">
+                        <div class="card-header">
+                            <div class="card-type audio">AUDIO</div>
+                            <div class="card-date">2 weeks ago</div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Ambient Loop #4</h3>
+                            <p class="card-excerpt">An experimental ambient track using granular synthesis and field recordings from my morning walk.</p>
+                            <div class="audio-player">
+                                <div class="audio-waveform" style="height: 40px; background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjQwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxwYXRoIGQ9Ik0wIDIwIHEgNSAtMTUgMTAgMCB0IDUgLTEwIHQgNSAxMCB0IDUgLTUgdCA1IDUgdCA1IC0xNSB0IDUgMTUgdCA1IC0xMCB0IDUgMTAgdCA1IC01IHQgNSA1IHQgNSAtMTUgdCA1IDE1IHQgNSAtMTAgdCA1IDEwIHQgNSAtNSB0IDUgNSB0IDUgLTE1IHQgNSAxNSB0IDUgLTEwIHQgNSAxMCB0IDUgLTUgdCA1IDUgdCA1IC0xNSB0IDUgMTUgdCA1IC0xMCB0IDUgMTAgdCA1IC01IHQgNSA1IHQgNSAtMTUgdCA1IDE1IHQgNSAtMTAgdCA1IDEwIHQgNSAtNSB0IDUgNSB0IDUgLTE1IHQgNSAxNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwxMjYsMTk3LDAuNikiIHN0cm9rZS13aWR0aD0iMiIvPgo8L3N2Zz4=');"></div>
+                                <div class="audio-controls">
+                                    <div class="play-button">▶</div>
+                                    <div class="progress-bar"></div>
+                                    <div class="audio-time">1:42 / 4:30</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="card-tags">
+                                <span class="card-tag">#ambient</span>
+                                <span class="card-tag">#music</span>
+                                <span class="card-tag">#synthesis</span>
+                            </div>
+                            <a href="#">View →</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Image Sketch -->
+                    <div class="sketch-card">
+                        <div class="card-header">
+                            <div class="card-type image">VISUAL</div>
+                            <div class="card-date">3 weeks ago</div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Generative Art Experiment #12</h3>
+                            <p class="card-excerpt">Playing with P5.js to create procedural patterns based on Voronoi tessellation with dynamic color schemes.</p>
+                            <div class="image-preview" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojN2MxZGU5O3N0b3Atb3BhY2l0eToxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZjU3YjE7c3RvcC1vcGFjaXR5OjEiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0idXJsKCNiZykiLz4KICA8cGF0aCBkPSJNMCw1MCBRNTAsMjUgMTAwLDUwIFQyMDAsNTAgVDMwMCw1MCBUNDAwLDUwIiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4zKSIgc3Ryb2tlLXdpZHRoPSI1Ii8+CiAgPHBhdGggZD0iTTAsNzUgUTUwLDUwIDE1MCw3NSBUMjUwLDc1IFQzNTAsNzUgVDQwMCw3NSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMikiIHN0cm9rZS13aWR0aD0iNSIvPgogIDxwYXRoIGQ9Ik0wLDEwMCBRNzUsMTI1IDE1MCwxMDAgVDI1MCwxMDAgVDM1MCwxMDAgVDQwMCwxMDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjQpIiBzdHJva2Utd2lkdGg9IjUiLz4KICA8cGF0aCBkPSJNMCwxMjUgUTUwLDE1MCAxNTAsMTI1IFQyNTAsMTI1IFQzNTAsMTI1IFQ0MDAsMTI1IiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4yKSIgc3Ryb2tlLXdpZHRoPSI1Ii8+CiAgPHBhdGggZD0iTTAsMTUwIFE1MCwxNzUgMTUwLDE1MCBUMjUwLDE1MCBUMzUwLDE1MCBUNDAwLDE1MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMykiIHN0cm9rZS13aWR0aD0iNSIvPgo8L3N2Zz4=');"></div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="card-tags">
+                                <span class="card-tag">#generative</span>
+                                <span class="card-tag">#p5js</span>
+                                <span class="card-tag">#creative-coding</span>
+                            </div>
+                            <a href="#">View →</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Project Sketch -->
+                    <div class="sketch-card">
+                        <div class="card-header">
+                            <div class="card-type code">PROJECT</div>
+                            <div class="card-date">1 month ago</div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Weather Haiku Generator</h3>
+                            <p class="card-excerpt">A small app that takes current weather data and generates haikus with matching mood and imagery. Experiment in creative APIs.</p>
+                            <div class="mood-bar">
+                                <div class="mood happy" title="Happy"></div>
+                                <div class="mood calm" title="Calm"></div>
+                                <div class="mood creative" title="Creative"></div>
+                                <div class="mood focused" title="Focused"></div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="card-tags">
+                                <span class="card-tag">#api</span>
+                                <span class="card-tag">#poetry</span>
+                                <span class="card-tag">#weather</span>
+                            </div>
+                            <a href="#">View →</a>
+                        </div>
+                    </div>
+                    
+                    <!-- In Progress Sketch -->
+                    <div class="sketch-card">
+                        <div class="card-header">
+                            <div class="card-type writing">IN PROGRESS</div>
+                            <div class="card-date">Updated today</div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Interactive Storytelling Format</h3>
+                            <p class="card-excerpt">Exploring new ways to create branching narratives for the web using a combination of CSS transitions and state management.</p>
+                            <div class="version-history">
+                                <div class="version"></div>
+                                <div class="version"></div>
+                                <div class="version active"></div>
+                                <span style="margin-left: 5px; font-size: 12px; opacity: 0.7;">3 versions</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="card-tags">
+                                <span class="card-tag">#storytelling</span>
+                                <span class="card-tag">#interactive</span>
+                                <span class="card-tag">#draft</span>
+                            </div>
+                            <a href="#">View →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <div class="sidebar-section">
+                    <div class="search-bar">
+                        <input type="text" class="search-input" placeholder="Search sketches...">
+                    </div>
+                    <div class="about-me">
+                        <div class="avatar">N</div>
+                        <div>
+                            <div style="font-weight: 500;">Nate Green</div>
+                            <div style="font-size: 14px; opacity: 0.7;">42 sketches</div>
+                        </div>
+                    </div>
+                    <a href="https://nate.green" class="nate-green-link">
+                        <span class="terminal-icon">></span>
+                        Visit my professional site
+                    </a>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">Popular Tags</h3>
+                    <div class="tag-cloud">
+                        <div class="tag-item">javascript</div>
+                        <div class="tag-item">webgl</div>
+                        <div class="tag-item">creative-coding</div>
+                        <div class="tag-item">react</div>
+                        <div class="tag-item">node</div>
+                        <div class="tag-item">design</div>
+                        <div class="tag-item">animation</div>
+                        <div class="tag-item">CSS</div>
+                        <div class="tag-item">music</div>
+                        <div class="tag-item">typography</div>
+                        <div class="tag-item">API</div>
+                        <div class="tag-item">experiments</div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">Collections</h3>
+                    <ul class="sidebar-links">
+                        <li><a href="#"><span class="link-icon">📁</span> WebGL Experiments</a></li>
+                        <li><a href="#"><span class="link-icon">📁</span> React Utility Components</a></li>
+                        <li><a href="#"><span class="link-icon">📁</span> Creative Writing</a></li>
+                        <li><a href="#"><span class="link-icon">📁</span> Audio Projects</a></li>
+                        <li><a href="#"><span class="link-icon">📁</span> Design Studies</a></li>
+                    </ul>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">Recent Activity</h3>
+                    <ul class="sidebar-links" style="font-size: 14px;">
+                        <li><a href="#"><span class="link-icon">✏️</span> You updated "Custom React Hook"</a></li>
+                        <li><a href="#"><span class="link-icon">👍</span> @dev_sarah liked your "Ambient Loop"</a></li>
+                        <li><a href="#"><span class="link-icon">💬</span> New comment on "Generative Art"</a></li>
+                        <li><a href="#"><span class="link-icon">🔄</span> @code_maestro forked your "Weather Haiku"</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <div>© 2025 sketchbin by Nate Green • <a href="#" style="color: inherit;">Privacy</a> • <a href="#" style="color: inherit;">Terms</a></div>
+        </footer>
+    </div>
+    
+    <script>
+        // Example interaction (for demo purposes)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Filter buttons
+            const filterButtons = document.querySelectorAll('.filter-button');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (this.classList.contains('create-new')) return;
+                    
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Simulate loading
+                    document.querySelector('.loading-bar').style.display = 'block';
+                    setTimeout(() => {
+                        document.querySelector('.loading-bar').style.display = 'none';
+                    }, 800);
+                });
+            });
+            
+            // Create new button
+            document.querySelector('.create-new').addEventListener('click', function() {
+                // Show toast message
+                const toast = document.querySelector('.toast-message');
+                toast.textContent = 'Creating new sketch...';
+                toast.style.display = 'block';
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 3000);
+            });
+            
+            // Audio player
+            document.querySelector('.play-button').addEventListener('click', function() {
+                this.textContent = this.textContent === '▶' ? '❚❚' : '▶';
+                
+                // Show toast message
+                const toast = document.querySelector('.toast-message');
+                toast.textContent = this.textContent === '❚❚' ? 'Now playing...' : 'Paused';
+                toast.style.display = 'block';
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 2000);
+            });
+            
+            // Tags
+            document.querySelectorAll('.tag-item').forEach(tag => {
+                tag.addEventListener('click', function() {
+                    // Show toast message
+                    const toast = document.querySelector('.toast-message');
+                    toast.textContent = `Filtering by #${this.textContent}`;
+                    toast.style.display = 'block';
+                    setTimeout(() => {
+                        toast.style.display = 'none';
+                    }, 2000);
+                    
+                    // Simulate loading
+                    document.querySelector('.loading-bar').style.display = 'block';
+                    setTimeout(() => {
+                        document.querySelector('.loading-bar').style.display = 'none';
+                    }, 800);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
