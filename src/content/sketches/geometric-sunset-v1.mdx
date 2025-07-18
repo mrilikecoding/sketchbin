@@ -1,0 +1,98 @@
+---
+title: "Geometric Sunset"
+version: "v1"
+status: "blooming"
+type: "visual"
+mood: ["serene", "contemplative"]
+collections: ["digital-landscapes", "generative-art"]
+tags: ["generative", "p5js", "geometry", "color", "procedural"]
+
+media_paths:
+  image: "images/geometric-sunset-v1.png"
+  process: "images/geometric-sunset-v1-process.gif"
+
+medium: "Digital - Generative"
+tools: ["p5.js", "JavaScript", "HTML5 Canvas"]
+style: "Minimalist Geometric"
+dimensions:
+  width: 1080
+  height: 1080
+
+tech_stack: ["p5.js", "JavaScript"]
+demo_url: "/demos/geometric-sunset-v1"
+
+inspiration: "Golden hour light filtering through venetian blinds, creating geometric patterns of warm and cool colors"
+learnings: "Discovered that using Perlin noise for subtle variations in positioning creates more organic-feeling geometric patterns"
+next_ideas: ["Animate the light progression", "Add interactive elements", "Explore different color palettes for different times of day"]
+
+created_at: 2024-12-12
+updated_at: 2024-12-12
+published: true
+preview_text: "A generative art piece exploring the intersection of geometric forms and natural color palettes."
+---
+
+# Geometric Sunset v1
+
+This piece explores the tension between rigid geometric forms and the soft, organic quality of natural light. I wanted to capture that magical moment when late afternoon sun creates geometric shadows through architectural elements.
+
+## Concept Development
+
+The idea started with an observation: how venetian blinds transform sunlight into precise strips of warm and cool color. There's something beautiful about this intersection of human-made geometry and natural phenomena.
+
+In code, I translated this into a series of overlapping rectangles with carefully controlled color relationships and subtle position variations.
+
+## Technical Implementation
+
+```javascript
+function generateSunset() {
+  const layers = [];
+  const baseHue = 25; // Warm orange starting point
+  
+  for (let i = 0; i < 40; i++) {
+    const layer = {
+      x: noise(i * 0.1) * 50 - 25,
+      y: i * 15,
+      width: width + 100,
+      height: 20 + noise(i * 0.05) * 10,
+      hue: baseHue + noise(i * 0.02) * 40,
+      saturation: 60 + noise(i * 0.03) * 20,
+      brightness: 90 - i * 1.5,
+      alpha: 0.3 + noise(i * 0.01) * 0.2
+    };
+    layers.push(layer);
+  }
+  
+  return layers;
+}
+```
+
+## Color Philosophy
+
+The color palette is built around the golden hour spectrum - warm oranges and yellows in the foreground gradually cooling to deeper purples and blues in the background. Each layer has slight variations in hue and saturation, controlled by Perlin noise to maintain coherence while adding organic variation.
+
+The transparency and layering create depth, with overlapping areas producing unexpected color mixtures that mirror how light actually behaves in physical space.
+
+## Process Notes
+
+What surprised me was how much the subtle position variations mattered. Perfectly aligned rectangles felt sterile and digital. The slight horizontal shifts, controlled by noise functions, give the piece a more hand-crafted feeling despite being entirely algorithmic.
+
+I also learned that the alpha blending mode dramatically affects the final mood. Multiply blending creates richer, more saturated overlaps that feel more like actual light mixing.
+
+## Iteration Plans
+
+This first version establishes the core visual language, but there's so much room for exploration:
+
+- **Animation**: Slowly shifting the color progression to show the full sunset sequence
+- **Interaction**: Mouse movement could influence the "wind" affecting the geometric elements  
+- **Time-based**: Different palettes for dawn, noon, dusk, night
+- **Weather**: Rain, fog, or storm variations of the same geometric approach
+
+## On Generative Art
+
+There's something deeply satisfying about encoding natural phenomena into algorithmic systems. You're not just copying nature, but discovering the underlying mathematical poetry that makes it beautiful.
+
+The random variations keep each generated version unique, yet the underlying rules ensure they all feel part of the same visual family. It's like writing a recipe for beauty and then letting the code cook infinite variations.
+
+---
+
+*Generated and refined over several evening coding sessions, each iteration teaching me something new about the relationship between randomness and aesthetic control.*

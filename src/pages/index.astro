@@ -1,0 +1,552 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getRecentSketches, getFeaturedSketches } from '@/lib/sketches';
+
+const recentSketches = await getRecentSketches(6);
+const featuredSketches = await getFeaturedSketches();
+---
+
+<BaseLayout 
+  title="sketchbin" 
+  description="A creative workspace for code, writing, audio, and visual experiments"
+>
+  <style>
+    .sketches {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 25px;
+    }
+    
+    .sketch-card {
+      background: rgba(15, 15, 20, 0.7);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    
+    .sketch-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .card-header {
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .card-type {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: 'Space Mono', monospace;
+    }
+    
+    .card-type.code {
+      background: rgba(77, 171, 245, 0.2);
+      color: #4DABF5;
+    }
+    
+    .card-type.writing {
+      background: rgba(137, 218, 89, 0.2);
+      color: #89DA59;
+    }
+    
+    .card-type.audio {
+      background: rgba(255, 126, 197, 0.2);
+      color: #FF7EC5;
+    }
+    
+    .card-type.visual {
+      background: rgba(255, 193, 7, 0.2);
+      color: #FFC107;
+    }
+    
+    .card-date {
+      font-size: 12px;
+      opacity: 0.7;
+    }
+    
+    .card-content {
+      padding: 15px;
+    }
+    
+    .card-title {
+      margin-bottom: 10px;
+      font-size: 18px;
+      font-weight: 500;
+    }
+    
+    .card-excerpt {
+      opacity: 0.8;
+      font-size: 14px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+    }
+    
+    .card-footer {
+      padding: 10px 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+    }
+    
+    .card-footer a {
+      color: #fff;
+      text-decoration: none;
+      opacity: 0.8;
+      transition: opacity 0.3s ease;
+    }
+    
+    .card-footer a:hover {
+      opacity: 1;
+    }
+    
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .card-tag {
+      font-size: 12px;
+      opacity: 0.6;
+    }
+    
+    .sidebar {
+      position: sticky;
+      top: 40px;
+    }
+    
+    .sidebar-section {
+      background: rgba(15, 15, 20, 0.7);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+    
+    .sidebar-title {
+      font-family: 'Space Mono', monospace;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .tag-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .tag-item {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 13px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .tag-item:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+    
+    .about-me {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #4A2FA0;
+      margin-right: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+    
+    .sidebar-links {
+      list-style: none;
+    }
+    
+    .sidebar-links li {
+      margin-bottom: 10px;
+    }
+    
+    .sidebar-links a {
+      display: flex;
+      align-items: center;
+      color: #fff;
+      text-decoration: none;
+      opacity: 0.8;
+      transition: opacity 0.3s ease;
+    }
+    
+    .sidebar-links a:hover {
+      opacity: 1;
+    }
+    
+    .link-icon {
+      margin-right: 10px;
+      font-size: 20px;
+    }
+    
+    .featured-sketch {
+      position: relative;
+      overflow: hidden;
+      border-radius: 8px;
+      grid-column: 1 / -1;
+      background: rgba(15, 15, 20, 0.7);
+      margin-bottom: 30px;
+    }
+    
+    .featured-content {
+      background: linear-gradient(to right, rgba(15, 15, 20, 0.9), rgba(15, 15, 20, 0.7));
+      padding: 30px;
+      height: 100%;
+    }
+    
+    .featured-label {
+      font-family: 'Space Mono', monospace;
+      background: rgba(255, 255, 255, 0.1);
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+    }
+    
+    .featured-title {
+      font-size: 28px;
+      margin-bottom: 15px;
+    }
+    
+    .featured-excerpt {
+      margin-bottom: 20px;
+      opacity: 0.9;
+      max-width: 600px;
+    }
+    
+    .featured-meta {
+      display: flex;
+      align-items: center;
+      margin-top: 20px;
+    }
+    
+    .featured-date {
+      margin-right: 15px;
+      opacity: 0.7;
+    }
+    
+    .cta-button {
+      display: inline-block;
+      background: #FF0080;
+      color: white;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .cta-button:hover {
+      background: #ff339a;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 0, 128, 0.3);
+    }
+    
+    .search-bar {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    
+    .search-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 4px;
+      padding: 10px 15px;
+      color: white;
+      font-family: 'Space Mono', monospace;
+    }
+    
+    .search-input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.15);
+    }
+    
+    .search-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .nate-green-link {
+      display: flex;
+      align-items: center;
+      background: rgba(42, 157, 86, 0.2);
+      padding: 10px 15px;
+      border-radius: 4px;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: #fff;
+    }
+    
+    .nate-green-link:hover {
+      background: rgba(42, 157, 86, 0.3);
+    }
+    
+    .terminal-icon {
+      margin-right: 10px;
+      opacity: 0.8;
+    }
+    
+    .filter-bar {
+      display: flex;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .filter-button {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      color: white;
+      font-family: 'Space Mono', monospace;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .filter-button:hover, .filter-button.active {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+    
+    .filter-button.active {
+      background: #FF0080;
+    }
+    
+    .create-new {
+      margin-left: auto;
+      background: #FF0080;
+      font-weight: 500;
+    }
+    
+    .create-new:hover {
+      background: #ff339a;
+    }
+    
+    .code-preview {
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 5px;
+      line-height: 1.4;
+      overflow-x: auto;
+      margin: 10px 0;
+      max-height: 150px;
+    }
+  </style>
+
+  <div class="main-content">
+    <div class="content-area">
+      <div class="featured-sketch">
+        <div class="featured-content">
+          <div class="featured-label">FEATURED SKETCH</div>
+          <h2 class="featured-title">Interactive Particle System</h2>
+          <p class="featured-excerpt">A mesmerizing particle system that responds to mouse movement with smooth, organic motion. Built with HTML5 Canvas and requestAnimationFrame for optimal performance.</p>
+          <div class="code-preview">
+class Particle {
+  constructor(x, y) {
+    this.position = { x, y };
+    this.velocity = { x: 0, y: 0 };
+    this.acceleration = { x: 0, y: 0 };
+    this.life = 1.0;
+    this.decay = 0.01;
+  }
+  
+  update() {
+    this.velocity.x += this.acceleration.x;
+    this.velocity.y += this.acceleration.y;
+    this.position.x += this.velocity.x;
+    this.position.y += this.velocity.y;
+    this.life -= this.decay;
+  }
+}
+          </div>
+          <div class="featured-meta">
+            <span class="featured-date">December 15, 2024</span>
+            <a href="/sketches/particle-system-v1" class="cta-button">View Full Sketch</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="filter-bar">
+        <button class="filter-button active">All Sketches</button>
+        <button class="filter-button">Code</button>
+        <button class="filter-button">Writing</button>
+        <button class="filter-button">Audio</button>
+        <button class="filter-button">Visual</button>
+        <button class="filter-button create-new">+ Create New</button>
+      </div>
+      
+      <div class="sketches">
+        {recentSketches.map((sketch) => (
+          <div class="sketch-card">
+            <div class="card-header">
+              <div class={`card-type ${sketch.data.type}`}>{sketch.data.type.toUpperCase()}</div>
+              <div class="card-date">
+                {new Date(sketch.data.created_at || Date.now()).toLocaleDateString('en-US', { 
+                  month: 'short', 
+                  day: 'numeric' 
+                })}
+              </div>
+            </div>
+            <div class="card-content">
+              <h3 class="card-title">{sketch.data.title}</h3>
+              <p class="card-excerpt">{sketch.data.preview_text || sketch.data.excerpt || 'A creative exploration...'}</p>
+              {sketch.data.type === 'code' && (
+                <div class="code-preview">
+// Sample code preview
+function createSketch() {
+  // Implementation details...
+  return sketch;
+}
+                </div>
+              )}
+            </div>
+            <div class="card-footer">
+              <div class="card-tags">
+                {sketch.data.tags.slice(0, 3).map((tag) => (
+                  <span class="card-tag">#{tag}</span>
+                ))}
+              </div>
+              <a href={`/sketches/${sketch.slug}`}>View →</a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+    
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="search-bar">
+          <input type="text" class="search-input" placeholder="Search sketches...">
+        </div>
+        <div class="about-me">
+          <div class="avatar">N</div>
+          <div>
+            <div style="font-weight: 500;">Nate Green</div>
+            <div style="font-size: 14px; opacity: 0.7;">{recentSketches.length} sketches</div>
+          </div>
+        </div>
+        <a href="https://nate.green" class="nate-green-link">
+          <span class="terminal-icon">></span>
+          Visit my professional site
+        </a>
+      </div>
+      
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">Popular Tags</h3>
+        <div class="tag-cloud">
+          <div class="tag-item">javascript</div>
+          <div class="tag-item">webgl</div>
+          <div class="tag-item">creative-coding</div>
+          <div class="tag-item">react</div>
+          <div class="tag-item">node</div>
+          <div class="tag-item">design</div>
+          <div class="tag-item">animation</div>
+          <div class="tag-item">CSS</div>
+          <div class="tag-item">music</div>
+          <div class="tag-item">typography</div>
+          <div class="tag-item">API</div>
+          <div class="tag-item">experiments</div>
+        </div>
+      </div>
+      
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">Collections</h3>
+        <ul class="sidebar-links">
+          <li><a href="/collections/creative-coding"><span class="link-icon">📁</span> Creative Coding Experiments</a></li>
+          <li><a href="/collections/late-night-thoughts"><span class="link-icon">📁</span> Late Night Thoughts</a></li>
+          <li><a href="#"><span class="link-icon">📁</span> Creative Writing</a></li>
+          <li><a href="#"><span class="link-icon">📁</span> Audio Projects</a></li>
+          <li><a href="#"><span class="link-icon">📁</span> Design Studies</a></li>
+        </ul>
+      </div>
+      
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">Recent Activity</h3>
+        <ul class="sidebar-links" style="font-size: 14px;">
+          <li><a href="#"><span class="link-icon">✏️</span> You updated "Particle System"</a></li>
+          <li><a href="#"><span class="link-icon">👍</span> New sketch "Geometric Sunset"</a></li>
+          <li><a href="#"><span class="link-icon">💬</span> Updated "On Creative Block"</a></li>
+          <li><a href="#"><span class="link-icon">🔄</span> Created "Midnight Drive"</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Interactive functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      // Filter buttons
+      const filterButtons = document.querySelectorAll('.filter-button');
+      filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          if (this.classList.contains('create-new')) return;
+          
+          filterButtons.forEach(btn => btn.classList.remove('active'));
+          this.classList.add('active');
+          
+          // Simulate loading
+          document.querySelector('.loading-bar').style.display = 'block';
+          setTimeout(() => {
+            document.querySelector('.loading-bar').style.display = 'none';
+          }, 800);
+        });
+      });
+      
+      // Create new button
+      document.querySelector('.create-new').addEventListener('click', function() {
+        const toast = document.querySelector('.toast-message');
+        toast.textContent = 'Creating new sketch...';
+        toast.style.display = 'block';
+        setTimeout(() => {
+          toast.style.display = 'none';
+        }, 3000);
+      });
+      
+      // Tags
+      document.querySelectorAll('.tag-item').forEach(tag => {
+        tag.addEventListener('click', function() {
+          const toast = document.querySelector('.toast-message');
+          toast.textContent = `Filtering by #${this.textContent}`;
+          toast.style.display = 'block';
+          setTimeout(() => {
+            toast.style.display = 'none';
+          }, 2000);
+          
+          document.querySelector('.loading-bar').style.display = 'block';
+          setTimeout(() => {
+            document.querySelector('.loading-bar').style.display = 'none';
+          }, 800);
+        });
+      });
+    });
+  </script>
+</BaseLayout>

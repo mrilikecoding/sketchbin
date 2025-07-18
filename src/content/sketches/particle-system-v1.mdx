@@ -1,0 +1,80 @@
+---
+title: "Interactive Particle System"
+version: "v1"
+status: "growing"
+type: "code"
+mood: ["experimental", "playful"]
+collections: ["creative-coding", "webgl-experiments"]
+tags: ["javascript", "canvas", "particles", "animation"]
+
+tech_stack: ["HTML5 Canvas", "JavaScript", "requestAnimationFrame"]
+language: "javascript"
+demo_url: "/demos/particle-system-v1"
+
+inspiration: "Inspired by watching dust particles dance in sunlight streaming through a window"
+learnings: "Discovered that using object pooling dramatically improves performance with 1000+ particles"
+next_ideas: ["Add mouse interaction", "Implement different force fields", "Try WebGL version for better performance"]
+
+created_at: 2024-12-15
+updated_at: 2024-12-15
+published: true
+preview_text: "A mesmerizing particle system that responds to mouse movement with smooth, organic motion."
+---
+
+# Interactive Particle System v1
+
+This is my first exploration into creating a particle system from scratch. The goal was to understand the fundamentals of particle physics simulation and create something visually engaging.
+
+## The Concept
+
+I wanted to capture that magical feeling of watching dust particles dance in a sunbeam. Each particle should feel alive, influenced by invisible forces, creating emergent patterns from simple rules.
+
+## Technical Implementation
+
+```javascript
+class Particle {
+  constructor(x, y) {
+    this.position = { x, y };
+    this.velocity = { x: 0, y: 0 };
+    this.acceleration = { x: 0, y: 0 };
+    this.life = 1.0;
+    this.decay = 0.01;
+  }
+  
+  update() {
+    this.velocity.x += this.acceleration.x;
+    this.velocity.y += this.acceleration.y;
+    this.position.x += this.velocity.x;
+    this.position.y += this.velocity.y;
+    this.life -= this.decay;
+  }
+  
+  draw(ctx) {
+    const alpha = this.life;
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = `hsl(${this.life * 60}, 70%, 60%)`;
+    ctx.beginPath();
+    ctx.arc(this.position.x, this.position.y, 2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+```
+
+## What I Learned
+
+The biggest breakthrough was implementing object pooling. Initially, creating and destroying particles caused noticeable frame drops with large particle counts. By reusing particle objects, performance improved dramatically.
+
+I also discovered that subtle randomness in particle behavior creates much more organic-looking motion than perfect mathematical curves.
+
+## Next Steps
+
+This is just the beginning! I'm excited to explore:
+- **Mouse interaction**: Particles should flow around the cursor like a river around a stone
+- **Force fields**: Invisible attractors and repellers to create dynamic patterns  
+- **WebGL version**: For handling thousands of particles smoothly
+
+The beauty of creative coding is that each small experiment opens up ten new possibilities to explore.
+
+---
+
+*This sketch is part of my ongoing exploration into creative coding and digital art. Each version builds on the last, documenting the creative journey as much as the final result.*

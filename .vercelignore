@@ -1,0 +1,22 @@
+# Development
+node_modules
+.astro
+.env*
+.DS_Store
+
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+ARCHITECTURE.md
+CLAUDE.md
+
+# Source media files (we'll process these into optimized versions)
+src/content/**/*.wav
+src/content/**/*.flac
+src/content/**/*.aiff
+src/content/**/*.tiff
+src/content/**/*.psd
+src/content/**/*.ai

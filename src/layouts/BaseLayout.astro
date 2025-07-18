@@ -1,0 +1,179 @@
+---
+export interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = "sketchbin", description = "A digital garden for creative work" } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap');
+      
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        background: linear-gradient(135deg, #7928CA 0%, #4A2FA0 50%, #FF0080 100%);
+        color: #f0f0f0;
+        font-family: 'DM Sans', sans-serif;
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+      
+      .site-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+      
+      header {
+        padding: 20px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      
+      .logo {
+        font-family: 'Space Mono', monospace;
+        font-size: 28px;
+        font-weight: bold;
+        color: #fff;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+      }
+      
+      .logo span {
+        background: rgba(0, 0, 0, 0.2);
+        padding: 5px 10px;
+        border-radius: 5px;
+        margin-right: 10px;
+      }
+      
+      nav ul {
+        display: flex;
+        list-style: none;
+      }
+      
+      nav ul li {
+        margin-left: 25px;
+      }
+      
+      nav a {
+        color: #fff;
+        text-decoration: none;
+        font-family: 'Space Mono', monospace;
+        opacity: 0.8;
+        transition: all 0.3s ease;
+      }
+      
+      nav a:hover {
+        opacity: 1;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+      }
+      
+      .main-content {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 30px;
+        margin: 40px 0;
+      }
+      
+      @media (max-width: 768px) {
+        .main-content {
+          grid-template-columns: 1fr;
+        }
+      }
+      
+      footer {
+        margin-top: 50px;
+        padding: 30px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        text-align: center;
+        font-size: 14px;
+        opacity: 0.7;
+      }
+      
+      .loading-bar {
+        height: 3px;
+        width: 100%;
+        background: linear-gradient(to right, #FF0080, #7928CA);
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        transform-origin: left;
+        animation: loading 2s ease-in-out infinite;
+        display: none;
+      }
+      
+      @keyframes loading {
+        0% { transform: scaleX(0); }
+        50% { transform: scaleX(1); }
+        100% { transform: scaleX(0); }
+      }
+      
+      .toast-message {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(76, 175, 80, 0.9);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-family: 'Space Mono', monospace;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        z-index: 100;
+        animation: fadeInOut 3s ease forwards;
+        display: none;
+      }
+      
+      @keyframes fadeInOut {
+        0% { opacity: 0; transform: translate(-50%, 20px); }
+        10% { opacity: 1; transform: translate(-50%, 0); }
+        90% { opacity: 1; transform: translate(-50%, 0); }
+        100% { opacity: 0; transform: translate(-50%, -20px); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="loading-bar"></div>
+    <div class="toast-message">Loading...</div>
+    
+    <div class="site-wrapper">
+      <header>
+        <a href="/" class="logo"><span>{}</span> sketchbin</a>
+        <nav>
+          <ul>
+            <li><a href="/">Explore</a></li>
+            <li><a href="/collections">Collections</a></li>
+            <li><a href="/activity">Activity</a></li>
+            <li><a href="/community">Community</a></li>
+          </ul>
+        </nav>
+      </header>
+      
+      <slot />
+      
+      <footer>
+        <div>© 2025 sketchbin by Nate Green • <a href="#" style="color: inherit;">Privacy</a> • <a href="#" style="color: inherit;">Terms</a></div>
+      </footer>
+    </div>
+  </body>
+</html>
